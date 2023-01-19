@@ -1,6 +1,6 @@
 import pygame
 from settings import *
-from random import choice, randint
+from random import choice, random
 
 class Upgrade(pygame.sprite.Sprite):
 	def __init__(self,pos,upgrade_type,groups):
@@ -249,6 +249,6 @@ class Block(pygame.sprite.Sprite):
 		if self.health > 0:
 			self.image = self.surfacemaker.get_surf(COLOR_LEGEND[str(self.health)],(BLOCK_WIDTH, BLOCK_HEIGHT))
 		else:
-			if randint(0,10) < 9:
+			if random() < UPGRADE_CHANCE:
 				self.create_upgrade(self.rect.center)
 			self.kill()
