@@ -33,3 +33,6 @@ PLAYER_SPEED = 500
 
 UPGRADE_CHANCE = 0.8
 UPGRADES = ['speed','laser','heart','size']
+
+TIMED_UPGRADES = ['speed','laser','size']
+TIMED_UPGRADES_LAST_IN_TICKS = 10000

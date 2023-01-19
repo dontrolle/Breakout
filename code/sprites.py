@@ -78,6 +78,7 @@ class Player(pygame.sprite.Sprite):
 	def upgrade(self,upgrade_type):
 		if upgrade_type == 'speed':
 			self.speed += 50
+			
 		if upgrade_type == 'heart':
 			self.hearts += 1
 
@@ -89,6 +90,23 @@ class Player(pygame.sprite.Sprite):
 
 		if upgrade_type == 'laser':
 			self.laser_amount += 1
+
+	def remove_upgrade(self,upgrade_type):
+		if upgrade_type == 'speed':
+			self.speed -= 50
+		
+		## should not
+		if upgrade_type == 'heart':
+			self.hearts -= 1
+
+		if upgrade_type == 'size':
+			new_width = self.rect.width / 1.1
+			self.image = self.surfacemaker.get_surf('player',(new_width,self.rect.height))
+			self.rect = self.image.get_rect(center = self.rect.center)
+			self.pos.x = self.rect.x
+
+		if upgrade_type == 'laser':
+			self.laser_amount -= 1
 
 	def display_lasers(self):
 		self.laser_rects = []

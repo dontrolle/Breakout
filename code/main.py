@@ -34,11 +34,14 @@ class Game:
 		self.projectile_surf = pygame.image.load('../graphics/other/projectile.png').convert_alpha()
 		self.can_shoot = True
 		self.shoot_time = 0
+  
+		# upgrades
+		self.upgrade_running_timers = []
 
 		# crt
 		if(WITH_CRT):
-		self.crt = CRT()
-
+			self.crt = CRT()
+   
 		# sounds and music
 		self.music_on = False
 
@@ -48,13 +51,16 @@ class Game:
 		self.powerup_sound = pygame.mixer.Sound('../sounds/powerup.wav')
 		self.powerup_sound.set_volume(0.1)
 
+		self.powerdown_sound = pygame.mixer.Sound('../sounds/powerdown.wav')
+		self.powerdown_sound.set_volume(0.1)
+
 		self.laserhit_sound = pygame.mixer.Sound('../sounds/laser_hit.wav')
 		self.laserhit_sound.set_volume(0.02)
-
+  
 		if(self.music_on):
-		self.music = pygame.mixer.Sound('../sounds/music.wav')
-		self.music.set_volume(0.1)
-		self.music.play(loops = -1)
+			self.music = pygame.mixer.Sound('../sounds/music.wav')
+			self.music.set_volume(0.1)
+			self.music.play(loops = -1)
 
 	def create_upgrade(self,pos):
 		upgrade_type = choice(UPGRADES)
@@ -88,6 +94,9 @@ class Game:
 		for sprite in overlap_sprites:
 			self.player.upgrade(sprite.upgrade_type)
 			self.powerup_sound.play()
+			if(sprite.upgrade_type in TIMED_UPGRADES):
+				time = pygame.time.get_ticks()
+				self.upgrade_running_timers.append((time, sprite.upgrade_type))
 
 	def create_projectile(self):
 		self.laser_sound.play()
@@ -100,6 +109,19 @@ class Game:
 	def laser_timer(self):
 		if pygame.time.get_ticks() - self.shoot_time >= 500:
 			self.can_shoot = True
+  
+	def upgrade_timers(self):
+		to_remove = []
+		for (index, (timer, upgrade_type)) in enumerate(self.upgrade_running_timers):
+			# print("checking ", (index, (timer, upgrade_type))," at: ", pygame.time.get_ticks())
+			if(pygame.time.get_ticks() - timer > TIMED_UPGRADES_LAST_IN_TICKS):
+				self.player.remove_upgrade(upgrade_type)
+				self.powerdown_sound.play()
+				to_remove.append(index)
+    # now remove timers that fired - in reverse order, to preserve indexes in self.upgrade_running_timers
+		to_remove.reverse()
+		for index in to_remove:
+			del self.upgrade_running_timers[index]
 
 	def projectile_block_collision(self):
 		for projectile in self.projectile_sprites:
@@ -139,6 +161,7 @@ class Game:
 			self.upgrade_collision()
 			self.laser_timer()
 			self.projectile_block_collision()
+			self.upgrade_timers()
 
 			# draw the frame
 			self.all_sprites.draw(self.display_surface)
@@ -146,7 +169,7 @@ class Game:
 
 			# crt styling
 			if(WITH_CRT):
-			self.crt.draw()
+				self.crt.draw()
 
 			# update window
 			pygame.display.update()
