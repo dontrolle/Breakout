@@ -54,7 +54,7 @@ class Player(pygame.sprite.Sprite):
 		self.hearts = 3
 
 		# laser
-		self.laser_amount = 2
+		self.laser_amount = 0
 		self.laser_surf = pygame.image.load('../graphics/other/laser.png').convert_alpha()
 		self.laser_rects = []
 
