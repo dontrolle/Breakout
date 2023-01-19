@@ -39,6 +39,9 @@ class Game:
 		if(WITH_CRT):
 		self.crt = CRT()
 
+		# sounds and music
+		self.music_on = False
+
 		self.laser_sound = pygame.mixer.Sound('../sounds/laser.wav')
 		self.laser_sound.set_volume(0.1)
 
@@ -48,6 +51,7 @@ class Game:
 		self.laserhit_sound = pygame.mixer.Sound('../sounds/laser_hit.wav')
 		self.laserhit_sound.set_volume(0.02)
 
+		if(self.music_on):
 		self.music = pygame.mixer.Sound('../sounds/music.wav')
 		self.music.set_volume(0.1)
 		self.music.play(loops = -1)
