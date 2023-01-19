@@ -1,10 +1,10 @@
 WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+WINDOW_HEIGHT = 744
 
 WITH_CRT = False
 
 BLOCK_MAP = [
-	'666666666666',
+	'            ',
 	'444557755444',
 	'333333333333',
 	'222222222222',
@@ -12,7 +12,8 @@ BLOCK_MAP = [
 	'            ',
 	'            ',
 	'            ',
-	'            ']
+	'            ',
+  '            ']
 
 COLOR_LEGEND = {
 	'1': 'blue',
@@ -30,6 +31,7 @@ BLOCK_WIDTH = WINDOW_WIDTH / len(BLOCK_MAP[0]) - GAP_SIZE
 TOP_OFFSET = WINDOW_HEIGHT // 30
 
 PLAYER_SPEED = 500
+BALL_INIT_SPEED = 400
 
 UPGRADE_CHANCE = 0.8
 UPGRADES = ['speed','laser','heart','size']

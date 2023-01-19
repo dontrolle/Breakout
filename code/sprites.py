@@ -144,7 +144,7 @@ class Ball(pygame.sprite.Sprite):
 		self.old_rect = self.rect.copy()
 		self.pos = pygame.math.Vector2(self.rect.topleft)
 		self.direction = pygame.math.Vector2((choice((1,-1)),-1))
-		self.speed = 400
+		self.speed = BALL_INIT_SPEED
 
 		# active
 		self.active = False
@@ -180,12 +180,15 @@ class Ball(pygame.sprite.Sprite):
 				self.direction.y = -1
 				self.player.hearts -= 1
 				self.fail_sound.play()
+				#TODO: Remove all upgrades AND clear all upgrade_timers in main
 				
 	def collision(self,direction):
 		# find overlapping objects 
 		overlap_sprites = pygame.sprite.spritecollide(self,self.blocks,False)
 		if self.rect.colliderect(self.player.rect):
 			overlap_sprites.append(self.player)
+   
+   #TODO: Divide pad into zones (3 or 5?) and skew direction according to hit-zone
 
 		if overlap_sprites:
 			if direction == 'horizontal':
