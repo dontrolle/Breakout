@@ -36,6 +36,7 @@ class Game:
 		self.shoot_time = 0
 
 		# crt
+		if(WITH_CRT):
 		self.crt = CRT()
 
 		self.laser_sound = pygame.mixer.Sound('../sounds/laser.wav')
@@ -140,6 +141,7 @@ class Game:
 			self.display_hearts()
 
 			# crt styling
+			if(WITH_CRT):
 			self.crt.draw()
 
 			# update window
