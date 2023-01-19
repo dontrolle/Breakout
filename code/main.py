@@ -38,6 +38,9 @@ class Game:
 		# upgrades
 		self.upgrade_running_timers = []
 
+		# ball
+		self.last_speed_inc_time = 0
+  
 		# crt
 		if(WITH_CRT):
 			self.crt = CRT()
@@ -123,6 +126,13 @@ class Game:
 		for index in to_remove:
 			del self.upgrade_running_timers[index]
 
+	def ball_speed_timer(self):
+		ticks = pygame.time.get_ticks()
+		if ticks - self.last_speed_inc_time >= BALL_SPEED_INTERVAL:
+			self.ball.speed += BALL_SPEED_INC
+			self.last_speed_inc_time = ticks
+			print (self.ball.speed)
+
 	def projectile_block_collision(self):
 		for projectile in self.projectile_sprites:
 			overlap_sprites  = pygame.sprite.spritecollide(projectile,self.block_sprites,False)
@@ -162,6 +172,7 @@ class Game:
 			self.laser_timer()
 			self.projectile_block_collision()
 			self.upgrade_timers()
+			self.ball_speed_timer()
 
 			# draw the frame
 			self.all_sprites.draw(self.display_surface)
