@@ -41,3 +41,16 @@ UPGRADES = ['speed','laser','heart','size']
 
 TIMED_UPGRADES = ['speed','laser','size']
 TIMED_UPGRADES_LAST_IN_TICKS = 10000
+
+SQUARE_ROOT_2_DIV_2 = 0.707
+SQUARE_ROOT_3_DIV_2 = 0.866
+
+# must be ordered from largest to -1 
+# (-1 to catch any rounding errors, which end up with an x below 0)
+COLLISION_DIRECTION_VECTORS = {
+	0.9: (SQUARE_ROOT_3_DIV_2,-0.5),
+	0.7: (SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
+	0.3: (1,-1),
+	0.1: (-SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
+	-1: (-SQUARE_ROOT_3_DIV_2,-0.5), 
+}

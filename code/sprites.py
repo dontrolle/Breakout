@@ -194,14 +194,15 @@ class Ball(pygame.sprite.Sprite):
 		if self.rect.colliderect(self.player.rect):
 			overlap_sprites.append(self.player)
    
-   #TODO: Divide pad into zones (5 or 7?) and skew direction according to hit-zone
-
 		if overlap_sprites:
 			if direction == 'horizontal':
 				for sprite in overlap_sprites:
+					# ball collides on left of sprite
 					if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
+						# move to border of sprite
 						self.rect.right = sprite.rect.left - 1
 						self.pos.x = self.rect.x
+						# adjust direction
 						self.direction.x *= -1
 						self.impact_sound.play()
 
@@ -214,13 +215,27 @@ class Ball(pygame.sprite.Sprite):
 					if getattr(sprite,'health',None):
 						sprite.get_damage(1)
 
-
+	   	#TODO: Divide pad into zones (5 or 7?) and skew direction according to hit-zone
+			# PICKUP: I have rudimentary working control built-in now, but now I need to tune
+			# some numbers I think, and study what Popcorn does... It seems like it's a much more fine-grained control?
+			# On the other hand, it does seem that I can maybe make do with only handling this in the case of vertical collisions (from above)?
 			if direction == 'vertical':
 				for sprite in overlap_sprites:
+					# ball collides sprite from above
 					if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
+						print ("direction before: ", self.direction)
+       			# move to border of sprite
 						self.rect.bottom = sprite.rect.top - 1
 						self.pos.y = self.rect.y
-						self.direction.y *= -1
+						# determine fraction of width for ball position
+						pos_fraction = (self.rect.centerx - sprite.rect.left) / sprite.rect.width
+						# adjust direction of sprite
+						for (limit, (dx, dy)) in COLLISION_DIRECTION_VECTORS.items():
+							if(pos_fraction > limit):
+								self.direction.y *= dy
+								self.direction.x *= dx
+								break
+						print ("direction after: ", self.direction)
 						self.impact_sound.play()
 
 					if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
