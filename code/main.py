@@ -25,7 +25,7 @@ class Game:
 		self.surfacemaker = SurfaceMaker()
 		self.player = Player(self.all_sprites,self.surfacemaker)
 		self.stage_setup()
-		self.ball = Ball(self.all_sprites,self.player,self.block_sprites)
+		self.ball = Ball(self.all_sprites,self.player,self.block_sprites,self.reset)
 
 		# hearts
 		self.heart_surf = pygame.image.load('../graphics/other/heart.png').convert_alpha()
@@ -116,7 +116,6 @@ class Game:
 	def upgrade_timers(self):
 		to_remove = []
 		for (index, (timer, upgrade_type)) in enumerate(self.upgrade_running_timers):
-			# print("checking ", (index, (timer, upgrade_type))," at: ", pygame.time.get_ticks())
 			if(pygame.time.get_ticks() - timer > TIMED_UPGRADES_LAST_IN_TICKS):
 				self.player.remove_upgrade(upgrade_type)
 				self.powerdown_sound.play()
@@ -131,7 +130,7 @@ class Game:
 		if ticks - self.last_speed_inc_time >= BALL_SPEED_INTERVAL:
 			self.ball.speed += BALL_SPEED_INC
 			self.last_speed_inc_time = ticks
-			print (self.ball.speed)
+			# print (self.ball.speed)
 
 	def projectile_block_collision(self):
 		for projectile in self.projectile_sprites:
@@ -142,6 +141,17 @@ class Game:
 				projectile.kill()
 				self.laserhit_sound.play()
 
+	def reset(self):
+		# reset upgrade-timers and remove upgrades from player
+		for ((_, upgrade_type)) in self.upgrade_running_timers:
+				self.player.remove_upgrade(upgrade_type)
+    
+		self.upgrade_running_timers.clear()
+
+		# reset ball and ball timer
+		self.ball.reset()
+		self.last_speed_inc_time = pygame.time.get_ticks()
+	
 	def run(self):
 		last_time = time.time()
 		while True:

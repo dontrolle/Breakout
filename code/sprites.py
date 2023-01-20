@@ -129,7 +129,7 @@ class Player(pygame.sprite.Sprite):
 		self.display_lasers()
 
 class Ball(pygame.sprite.Sprite):
-	def __init__(self,groups,player,blocks):
+	def __init__(self,groups,player,blocks,on_loose_heart):
 		super().__init__(groups)
 
 		# collision objects
@@ -145,6 +145,9 @@ class Ball(pygame.sprite.Sprite):
 		self.pos = pygame.math.Vector2(self.rect.topleft)
 		self.direction = pygame.math.Vector2((choice((1,-1)),-1))
 		self.speed = BALL_INIT_SPEED
+  
+		# save game reset callback
+		self.on_loose_heart = on_loose_heart
 
 		# active
 		self.active = False
@@ -157,6 +160,12 @@ class Ball(pygame.sprite.Sprite):
 		self.fail_sound = pygame.mixer.Sound('../sounds/fail.wav')
 		self.fail_sound.set_volume(0.1)
 
+	def reset(self):  
+		self.active = False
+		self.direction.y = -1
+		self.player.hearts -= 1
+		self.speed = BALL_INIT_SPEED
+   
 	def window_collision(self,direction):
 		if direction == 'horizontal':
 			if self.rect.left < 0:
@@ -176,11 +185,8 @@ class Ball(pygame.sprite.Sprite):
 				self.direction.y *= -1
 
 			if self.rect.bottom > WINDOW_HEIGHT:
-				self.active = False
-				self.direction.y = -1
-				self.player.hearts -= 1
 				self.fail_sound.play()
-				#TODO: Remove all upgrades AND clear all upgrade_timers in main
+				self.on_loose_heart()
 				
 	def collision(self,direction):
 		# find overlapping objects 
@@ -188,7 +194,7 @@ class Ball(pygame.sprite.Sprite):
 		if self.rect.colliderect(self.player.rect):
 			overlap_sprites.append(self.player)
    
-   #TODO: Divide pad into zones (3 or 5?) and skew direction according to hit-zone
+   #TODO: Divide pad into zones (5 or 7?) and skew direction according to hit-zone
 
 		if overlap_sprites:
 			if direction == 'horizontal':
