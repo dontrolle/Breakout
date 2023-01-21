@@ -174,7 +174,8 @@ class Game:
 							self.shoot_time = pygame.time.get_ticks()
 
 			# draw bg
-			self.display_surface.blit(self.bg,(0,0))
+			#self.display_surface.blit(self.bg,(0,0))
+			self.display_surface.fill(0)
 			
 			# update the game
 			self.all_sprites.update(dt)
