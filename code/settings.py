@@ -6,26 +6,35 @@ WITH_CRT = False
 BLOCK_MAP = [
 	'            ',
  	'            ',
+	'            ',  
+ 	'            ',
   '            ',
   '            ',  
-	'444557755444',
-	'333333333333',
-	'222222222222',
-	'111111111111',
+	'bbbbbbbbbbbb',
+	'rrrrrzzrrrrr',
+	'bbbbbbbbbbbb',
+	'rrrrrrrrrrrr',
+ 	'            ',
 	'            ',
 	'            ',
 	'            ',
 	'            ',
   '            ']
 
-COLOR_LEGEND = {
-	'1': 'blue',
-	'2': 'green',
-	'3': 'red',
-	'4': 'orange',
-	'5': 'purple',
-	'6': 'bronce',
-	'7': 'grey',
+BLOCK_DEFS = {
+	'r': (1, 'red'),
+	'b': (1, 'blue'),
+	'g': (2, 'green'),
+	'o': (3, 'orange'),
+	'p': (4, 'purple'),
+	'e': (5, 'grey'),
+	'z': (6, 'bronze'),
+}
+
+# note: for now, we accept that there can only be one block-type
+# with a particular in this dict, and that it will be an arbitrary one
+BLOCK_TYPE_BY_HEALTH = {
+	h : n for (h,n) in BLOCK_DEFS.values()
 }
 
 GAP_SIZE = 2
@@ -33,7 +42,7 @@ BLOCK_HEIGHT = WINDOW_HEIGHT / len(BLOCK_MAP) - GAP_SIZE
 BLOCK_WIDTH = WINDOW_WIDTH / len(BLOCK_MAP[0]) - GAP_SIZE
 TOP_OFFSET = WINDOW_HEIGHT // 30
 
-PLAYER_SPEED = 500
+PLAYER_SPEED = 800
 BALL_INIT_SPEED = 400
 BALL_MAX_SPEED = 700
 BALL_SPEED_INC = 25

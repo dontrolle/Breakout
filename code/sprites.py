@@ -274,12 +274,13 @@ class Block(pygame.sprite.Sprite):
 	def __init__(self,block_type,pos,groups,surfacemaker,create_upgrade):
 		super().__init__(groups)
 		self.surfacemaker = surfacemaker
-		self.image = self.surfacemaker.get_surf(COLOR_LEGEND[block_type],(BLOCK_WIDTH, BLOCK_HEIGHT))
+		(health, block_name) = BLOCK_DEFS[block_type]
+		self.image = self.surfacemaker.get_surf(block_name,(BLOCK_WIDTH, BLOCK_HEIGHT))
 		self.rect = self.image.get_rect(topleft = pos)
 		self.old_rect = self.rect.copy()
 
 		# damage information
-		self.health = int(block_type)
+		self.health = health
 
 		# upgrade
 		self.create_upgrade = create_upgrade
@@ -288,7 +289,7 @@ class Block(pygame.sprite.Sprite):
 		self.health -= amount
 
 		if self.health > 0:
-			self.image = self.surfacemaker.get_surf(COLOR_LEGEND[str(self.health)],(BLOCK_WIDTH, BLOCK_HEIGHT))
+			self.image = self.surfacemaker.get_surf(BLOCK_TYPE_BY_HEALTH[self.health],(BLOCK_WIDTH, BLOCK_HEIGHT))
 		else:
 			if random() < UPGRADE_CHANCE:
 				self.create_upgrade(self.rect.center)
