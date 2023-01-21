@@ -1,10 +1,13 @@
 WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 744
+WINDOW_HEIGHT = 960
 
 WITH_CRT = False
 
 BLOCK_MAP = [
 	'            ',
+ 	'            ',
+  '            ',
+  '            ',  
 	'444557755444',
 	'333333333333',
 	'222222222222',
@@ -48,9 +51,11 @@ SQUARE_ROOT_3_DIV_2 = 0.866
 # must be ordered from largest to -1 
 # (-1 to catch any rounding errors, which end up with an x below 0)
 COLLISION_DIRECTION_VECTORS = {
-	0.9: (SQUARE_ROOT_3_DIV_2,-0.5),
-	0.7: (SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
-	0.3: (1,-1),
-	0.1: (-SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
-	-1: (-SQUARE_ROOT_3_DIV_2,-0.5), 
+	0.9:  (SQUARE_ROOT_3_DIV_2,-0.5),
+	0.8:  (SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
+	0.65: (0.5,-SQUARE_ROOT_3_DIV_2),
+	0.35: (1,-1),
+	0.2:  (-0.5,-SQUARE_ROOT_3_DIV_2),
+	0.1:  (-SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
+	-1:   (-SQUARE_ROOT_3_DIV_2,-0.5), 
 }

@@ -215,15 +215,11 @@ class Ball(pygame.sprite.Sprite):
 					if getattr(sprite,'health',None):
 						sprite.get_damage(1)
 
-	   	#TODO: Divide pad into zones (5 or 7?) and skew direction according to hit-zone
-			# PICKUP: I have rudimentary working control built-in now, but now I need to tune
-			# some numbers I think, and study what Popcorn does... It seems like it's a much more fine-grained control?
-			# On the other hand, it does seem that I can maybe make do with only handling this in the case of vertical collisions (from above)?
+	   	#For vertical collision from above (only with the pad?), we divide it into zones and set direction according to the hit-zone
 			if direction == 'vertical':
 				for sprite in overlap_sprites:
 					# ball collides sprite from above
 					if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
-						print ("direction before: ", self.direction)
        			# move to border of sprite
 						self.rect.bottom = sprite.rect.top - 1
 						self.pos.y = self.rect.y
@@ -232,10 +228,13 @@ class Ball(pygame.sprite.Sprite):
 						# adjust direction of sprite
 						for (limit, (dx, dy)) in COLLISION_DIRECTION_VECTORS.items():
 							if(pos_fraction > limit):
-								self.direction.y *= dy
-								self.direction.x *= dx
+								if(dy == -1):
+									self.direction.y *= -1
+								else:
+									# we simply set the direction directly
+									self.direction.y = dy
+									self.direction.x = dx
 								break
-						print ("direction after: ", self.direction)
 						self.impact_sound.play()
 
 					if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
