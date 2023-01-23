@@ -223,18 +223,22 @@ class Ball(pygame.sprite.Sprite):
        			# move to border of sprite
 						self.rect.bottom = sprite.rect.top - 1
 						self.pos.y = self.rect.y
-						# determine fraction of width for ball position
-						pos_fraction = (self.rect.centerx - sprite.rect.left) / sprite.rect.width
-						# adjust direction of sprite
-						for (limit, (dx, dy)) in COLLISION_DIRECTION_VECTORS.items():
-							if(pos_fraction > limit):
-								if(dy == -1):
-									self.direction.y *= -1
-								else:
-									# we simply set the direction directly
-									self.direction.y = dy
-									self.direction.x = dx
-								break
+						# handle player-pad specially
+						if sprite == self.player:
+							# determine fraction of width for ball position
+							pos_fraction = (self.rect.centerx - sprite.rect.left) / sprite.rect.width
+							# adjust direction of sprite
+							for (limit, (dx, dy)) in COLLISION_DIRECTION_VECTORS.items():
+								if(pos_fraction > limit):
+									if(dy == -1):
+										self.direction.y *= -1
+									else:
+										# we simply set the direction directly
+										self.direction.y = dy
+										self.direction.x = dx
+									break
+						else:
+							self.direction.y *= -1
 						self.impact_sound.play()
 
 					if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
