@@ -50,6 +50,10 @@ class Player(pygame.sprite.Sprite):
 		self.direction = pygame.math.Vector2()
 		self.pos = pygame.math.Vector2(self.rect.topleft)
 		self.speed = PLAYER_SPEED
+  
+		# make player rect slightly wider (w.o. modifying image)
+  	# to make edge-collisions a bit more friendly
+		self.rect = self.rect.inflate(PLAYER_WIDTH_PADDING,0)
 
 		self.hearts = 3
 
@@ -83,9 +87,13 @@ class Player(pygame.sprite.Sprite):
 			self.hearts += 1
 
 		if upgrade_type == 'size':
+			# NOTE: hacky handling of PLAYER_WIDTH_PADDING - should really intro a separate hitbox
+			self.rect = self.rect.inflate(-PLAYER_WIDTH_PADDING,0)
 			new_width = self.rect.width * 1.1
 			self.image = self.surfacemaker.get_surf('player',(new_width,self.rect.height))
 			self.rect = self.image.get_rect(center = self.rect.center)
+   		# NOTE: hacky handling of PLAYER_WIDTH_PADDING - should really intro a separate hitbox
+			self.rect = self.rect.inflate(-PLAYER_WIDTH_PADDING,0)
 			self.pos.x = self.rect.x
 
 		if upgrade_type == 'laser':
