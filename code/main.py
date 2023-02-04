@@ -148,7 +148,6 @@ class Game:
 		if ticks - self.last_speed_inc_time >= BALL_SPEED_INTERVAL:
 			self.ball.speed += BALL_SPEED_INC
 			self.last_speed_inc_time = ticks
-			# print (self.ball.speed)
 
 	def projectile_block_collision(self):
 		for projectile in self.projectile_sprites:
