@@ -93,6 +93,7 @@ class Game:
 			self.display_surface.blit(self.heart_surf,(x,4))
 
 	def upgrade_collision(self):
+		# this doesn't use the hitbox used for ball collisions, but I think that's ok
 		overlap_sprites = pygame.sprite.spritecollide(self.player,self.upgrade_sprites,True)
 		for sprite in overlap_sprites:
 			self.player.upgrade(sprite.upgrade_type)

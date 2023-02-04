@@ -43,18 +43,22 @@ class Player(pygame.sprite.Sprite):
 		self.display_surface = pygame.display.get_surface()
 		self.surfacemaker = surfacemaker
 		self.image = surfacemaker.get_surf('player',(WINDOW_WIDTH // 10,WINDOW_HEIGHT // 20))
+		self.debug = True
 
-		# position
+		# position and rect
 		self.rect = self.image.get_rect(midbottom = (WINDOW_WIDTH // 2,WINDOW_HEIGHT - 20))
-		self.old_rect = self.rect.copy()
-		self.direction = pygame.math.Vector2()
 		self.pos = pygame.math.Vector2(self.rect.topleft)
+		self.old_rect = self.rect.copy()
+  
+		# hitbox - slightly larger to make edge-collisions a bit more friendly
+		self.player_width_hitbox_padding = PLAYER_WIDTH_HITBOX_PADDING
+		self.hitbox = self.rect.inflate(self.player_width_hitbox_padding,0)
+
+		# direction and speed
+		self.direction = pygame.math.Vector2()
 		self.speed = PLAYER_SPEED
   
-		# make player rect slightly wider (w.o. modifying image)
-  	# to make edge-collisions a bit more friendly
-		self.rect = self.rect.inflate(PLAYER_WIDTH_PADDING,0)
-
+		# properties
 		self.hearts = 3
 
 		# laser
@@ -62,12 +66,25 @@ class Player(pygame.sprite.Sprite):
 		self.laser_surf = pygame.image.load('../graphics/other/laser.png').convert_alpha()
 		self.laser_rects = []
 
+		# input delay
+		self.last_input_time = 0
+
 	def input(self):
 		keys = pygame.key.get_pressed()
 		if keys[pygame.K_RIGHT]:
 			self.direction.x = 1
 		elif keys[pygame.K_LEFT]:
 			self.direction.x = -1
+		elif keys[pygame.K_PAGEUP]:
+			self.player_width_hitbox_padding += 2
+			self.inflate_pad(2)
+		elif keys[pygame.K_PAGEDOWN]:
+			self.player_width_hitbox_padding -= 2
+			self.inflate_pad(-2)
+		elif keys[pygame.K_F12]:
+			if pygame.time.get_ticks() - self.last_input_time >= 200:
+				self.debug = not self.debug
+				self.last_input_time = pygame.time.get_ticks()
 		else:
 			self.direction.x = 0
 
@@ -79,6 +96,18 @@ class Player(pygame.sprite.Sprite):
 			self.rect.left = 0
 			self.pos.x = self.rect.x
 
+	def inflate_pad(self, amount, inflate_rect = False):
+		if inflate_rect:
+			print("b r:", self.rect)
+			self.rect.inflate_ip(amount, 0)
+			self.image = self.surfacemaker.get_surf('player',(self.rect.width,self.rect.height))
+			self.pos.x = self.rect.x
+			print("a r:", self.rect)
+
+		print("b h:", self.hitbox)
+		self.hitbox.inflate_ip(amount, 0)
+		print("a h:", self.hitbox)
+
 	def upgrade(self,upgrade_type):
 		if upgrade_type == 'speed':
 			self.speed += 50
@@ -87,14 +116,7 @@ class Player(pygame.sprite.Sprite):
 			self.hearts += 1
 
 		if upgrade_type == 'size':
-			# NOTE: hacky handling of PLAYER_WIDTH_PADDING - should really intro a separate hitbox
-			self.rect = self.rect.inflate(-PLAYER_WIDTH_PADDING,0)
-			new_width = self.rect.width * 1.1
-			self.image = self.surfacemaker.get_surf('player',(new_width,self.rect.height))
-			self.rect = self.image.get_rect(center = self.rect.center)
-   		# NOTE: hacky handling of PLAYER_WIDTH_PADDING - should really intro a separate hitbox
-			self.rect = self.rect.inflate(-PLAYER_WIDTH_PADDING,0)
-			self.pos.x = self.rect.x
+			self.inflate_pad(self.rect.width * 0.1, True)
 
 		if upgrade_type == 'laser':
 			self.laser_amount += 1
@@ -108,10 +130,7 @@ class Player(pygame.sprite.Sprite):
 			self.hearts -= 1
 
 		if upgrade_type == 'size':
-			new_width = self.rect.width / 1.1
-			self.image = self.surfacemaker.get_surf('player',(new_width,self.rect.height))
-			self.rect = self.image.get_rect(center = self.rect.center)
-			self.pos.x = self.rect.x
+			self.inflate_pad(-self.rect.width * 0.1, True)
 
 		if upgrade_type == 'laser':
 			self.laser_amount -= 1
@@ -128,13 +147,33 @@ class Player(pygame.sprite.Sprite):
 			for laser_rect in self.laser_rects:
 				self.display_surface.blit(self.laser_surf,laser_rect)
 
+	def display_debug(self):
+		# rect and hitbox
+		pygame.draw.rect(self.display_surface, "brown1", self.hitbox)
+		pygame.draw.rect(self.display_surface, "green", self.rect)
+
+		# blue guides
+		rect = pygame.Rect(0,WINDOW_HEIGHT - 10,10,10)
+		pygame.draw.rect(self.display_surface, "blue", rect)
+
+		rect = pygame.Rect(630,940,20,20)
+		pygame.draw.rect(self.display_surface, "blue", rect)
+  
+		rect = pygame.Rect(WINDOW_WIDTH - 10, WINDOW_HEIGHT - 10, 10, 10)
+		pygame.draw.rect(self.display_surface, "blue", rect)
+  
+   
 	def update(self,dt):
 		self.old_rect = self.rect.copy()
+		self.old_hitbox = self.hitbox.copy()
 		self.input()
 		self.pos.x += self.direction.x * self.speed * dt
-		self.rect.x = round(self.pos.x) 
+		self.rect.x = round(self.pos.x)
+		self.hitbox.centerx = self.rect.centerx
 		self.screen_constraint()
 		self.display_lasers()
+		if(self.debug):
+			self.display_debug()
 
 class Ball(pygame.sprite.Sprite):
 	def __init__(self,groups,player,blocks,on_loose_heart):
@@ -161,7 +200,6 @@ class Ball(pygame.sprite.Sprite):
 		self.active = False
 
 		# sounds
-
 		self.impact_sound = pygame.mixer.Sound('../sounds/impact.wav')
 		self.impact_sound.set_volume(0.1)
 
@@ -199,23 +237,23 @@ class Ball(pygame.sprite.Sprite):
 	def collision(self,direction):
 		# find overlapping objects 
 		overlap_sprites = pygame.sprite.spritecollide(self,self.blocks,False)
-		if self.rect.colliderect(self.player.rect):
+		if self.rect.colliderect(self.player.hitbox):
 			overlap_sprites.append(self.player)
    
 		if overlap_sprites:
 			if direction == 'horizontal':
 				for sprite in overlap_sprites:
 					# ball collides on left of sprite
-					if self.rect.right >= sprite.rect.left and self.old_rect.right <= sprite.old_rect.left:
+					if self.rect.right >= sprite.hitbox.left and self.old_rect.right <= sprite.old_hitbox.left:
 						# move to border of sprite
-						self.rect.right = sprite.rect.left - 1
+						self.rect.right = sprite.hitbox.left - 1
 						self.pos.x = self.rect.x
 						# adjust direction
 						self.direction.x *= -1
 						self.impact_sound.play()
 
-					if self.rect.left <= sprite.rect.right and self.old_rect.left >= sprite.old_rect.right:
-						self.rect.left = sprite.rect.right + 1
+					if self.rect.left <= sprite.hitbox.right and self.old_rect.left >= sprite.old_hitbox.right:
+						self.rect.left = sprite.hitbox.right + 1
 						self.pos.x = self.rect.x
 						self.direction.x *= -1
 						self.impact_sound.play()
@@ -227,14 +265,14 @@ class Ball(pygame.sprite.Sprite):
 			if direction == 'vertical':
 				for sprite in overlap_sprites:
 					# ball collides sprite from above
-					if self.rect.bottom >= sprite.rect.top and self.old_rect.bottom <= sprite.old_rect.top:
+					if self.rect.bottom >= sprite.hitbox.top and self.old_rect.bottom <= sprite.old_hitbox.top:
        			# move to border of sprite
-						self.rect.bottom = sprite.rect.top - 1
+						self.rect.bottom = sprite.hitbox.top - 1
 						self.pos.y = self.rect.y
 						# handle player-pad specially
 						if sprite == self.player:
 							# determine fraction of width for ball position
-							pos_fraction = (self.rect.centerx - sprite.rect.left) / sprite.rect.width
+							pos_fraction = (self.rect.centerx - sprite.hitbox.left) / sprite.hitbox.width
 							# adjust direction of sprite
 							for (limit, (dx, dy)) in COLLISION_DIRECTION_VECTORS.items():
 								if(pos_fraction > limit):
@@ -249,8 +287,8 @@ class Ball(pygame.sprite.Sprite):
 							self.direction.y *= -1
 						self.impact_sound.play()
 
-					if self.rect.top <= sprite.rect.bottom and self.old_rect.top >= sprite.old_rect.bottom:
-						self.rect.top = sprite.rect.bottom + 1
+					if self.rect.top <= sprite.hitbox.bottom and self.old_rect.top >= sprite.old_hitbox.bottom:
+						self.rect.top = sprite.hitbox.bottom + 1
 						self.pos.y = self.rect.y
 						self.direction.y *= -1
 						self.impact_sound.play()
@@ -289,7 +327,8 @@ class Block(pygame.sprite.Sprite):
 		(health, block_name) = BLOCK_DEFS[block_type]
 		self.image = self.surfacemaker.get_surf(block_name,(BLOCK_WIDTH, BLOCK_HEIGHT))
 		self.rect = self.image.get_rect(topleft = pos)
-		self.old_rect = self.rect.copy()
+		self.hitbox = self.rect.copy()
+		self.old_hitbox = self.rect.copy()
 
 		# damage information
 		self.health = health
