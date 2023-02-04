@@ -43,7 +43,7 @@ class Player(pygame.sprite.Sprite):
 		self.display_surface = pygame.display.get_surface()
 		self.surfacemaker = surfacemaker
 		self.image = surfacemaker.get_surf('player',(WINDOW_WIDTH // 10,WINDOW_HEIGHT // 20))
-		self.debug = True
+		self.debug = False
 
 		# position and rect
 		self.rect = self.image.get_rect(midbottom = (WINDOW_WIDTH // 2,WINDOW_HEIGHT - 20))
@@ -60,6 +60,7 @@ class Player(pygame.sprite.Sprite):
   
 		# properties
 		self.hearts = 3
+		self.points = 0
 
 		# laser
 		self.laser_amount = 0
@@ -68,6 +69,10 @@ class Player(pygame.sprite.Sprite):
 
 		# input delay
 		self.last_input_time = 0
+
+	def add_points(self, amount):
+		self.points += amount
+		print(self.points)
 
 	def input(self):
 		keys = pygame.key.get_pressed()
@@ -97,16 +102,11 @@ class Player(pygame.sprite.Sprite):
 			self.pos.x = self.rect.x
 
 	def inflate_pad(self, amount, inflate_rect = False):
+		self.hitbox.inflate_ip(amount, 0)
 		if inflate_rect:
-			print("b r:", self.rect)
 			self.rect.inflate_ip(amount, 0)
 			self.image = self.surfacemaker.get_surf('player',(self.rect.width,self.rect.height))
 			self.pos.x = self.rect.x
-			print("a r:", self.rect)
-
-		print("b h:", self.hitbox)
-		self.hitbox.inflate_ip(amount, 0)
-		print("a h:", self.hitbox)
 
 	def upgrade(self,upgrade_type):
 		if upgrade_type == 'speed':
@@ -161,7 +161,6 @@ class Player(pygame.sprite.Sprite):
   
 		rect = pygame.Rect(WINDOW_WIDTH - 10, WINDOW_HEIGHT - 10, 10, 10)
 		pygame.draw.rect(self.display_surface, "blue", rect)
-  
    
 	def update(self,dt):
 		self.old_rect = self.rect.copy()
@@ -321,10 +320,11 @@ class Ball(pygame.sprite.Sprite):
 			self.pos = pygame.math.Vector2(self.rect.topleft)
 
 class Block(pygame.sprite.Sprite):
-	def __init__(self,block_type,pos,groups,surfacemaker,create_upgrade):
+	def __init__(self,block_type,pos,groups,surfacemaker,player,create_upgrade):
 		super().__init__(groups)
 		self.surfacemaker = surfacemaker
-		(health, block_name) = BLOCK_DEFS[block_type]
+		self.player = player
+		(health, block_name, points) = BLOCK_DEFS[block_type]
 		self.image = self.surfacemaker.get_surf(block_name,(BLOCK_WIDTH, BLOCK_HEIGHT))
 		self.rect = self.image.get_rect(topleft = pos)
 		self.hitbox = self.rect.copy()
@@ -332,6 +332,9 @@ class Block(pygame.sprite.Sprite):
 
 		# damage information
 		self.health = health
+	
+		# points
+		self.points = points
 
 		# upgrade
 		self.create_upgrade = create_upgrade
@@ -344,4 +347,5 @@ class Block(pygame.sprite.Sprite):
 		else:
 			if random() < UPGRADE_CHANCE:
 				self.create_upgrade(self.rect.center)
+			self.player.add_points(self.points)
 			self.kill()

@@ -85,7 +85,7 @@ class Game:
 					# find the x and y position for each individual block
 					x = col_index * (BLOCK_WIDTH + GAP_SIZE) + GAP_SIZE // 2
 					y = TOP_OFFSET + row_index * (BLOCK_HEIGHT + GAP_SIZE) + GAP_SIZE // 2
-					Block(col,(x,y),[self.all_sprites,self.block_sprites],self.surfacemaker,self.create_upgrade)
+					Block(col,(x,y),[self.all_sprites,self.block_sprites],self.surfacemaker,self.player,self.create_upgrade)
 
 	def display_hearts(self):
 		for i in range(self.player.hearts):

@@ -22,19 +22,19 @@ BLOCK_MAP = [
   '            ']
 
 BLOCK_DEFS = {
-	'r': (1, 'red'),
-	'b': (1, 'blue'),
-	'g': (2, 'green'),
-	'o': (3, 'orange'),
-	'p': (4, 'purple'),
-	'e': (5, 'grey'),
-	'z': (6, 'bronze'),
+	'r': (1, 'red', 50),
+	'b': (1, 'blue', 50),
+	'g': (2, 'green', 100),
+	'o': (3, 'orange', 150),
+	'p': (4, 'purple', 200),
+	'e': (5, 'grey', 300),
+	'z': (6, 'bronze', 500),
 }
 
 # note: for now, we accept that there can only be one block-type
 # with a particular in this dict, and that it will be an arbitrary one
 BLOCK_TYPE_BY_HEALTH = {
-	h : n for (h,n) in BLOCK_DEFS.values()
+	h : n for (h,n,_) in BLOCK_DEFS.values()
 }
 
 GAP_SIZE = 2
