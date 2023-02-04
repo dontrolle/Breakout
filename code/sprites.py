@@ -61,6 +61,7 @@ class Player(pygame.sprite.Sprite):
 		# properties
 		self.hearts = 3
 		self.points = 0
+		self.score_update_since_last = True
 
 		# laser
 		self.laser_amount = 0
@@ -72,7 +73,7 @@ class Player(pygame.sprite.Sprite):
 
 	def add_points(self, amount):
 		self.points += amount
-		print(self.points)
+		self.score_update_since_last = True
 
 	def input(self):
 		keys = pygame.key.get_pressed()

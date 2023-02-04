@@ -29,6 +29,12 @@ class Game:
 
 		# hearts
 		self.heart_surf = pygame.image.load('../graphics/other/heart.png').convert_alpha()
+  
+		# score
+		self.font = pygame.font.Font('freesansbold.ttf', 24)
+		self.text_surf = None
+		self.text_rect = None
+		self.player.score_update_since_last = True
 
 		# projectile
 		self.projectile_surf = pygame.image.load('../graphics/other/projectile.png').convert_alpha()
@@ -91,6 +97,17 @@ class Game:
 		for i in range(self.player.hearts):
 			x = 2 + i * (self.heart_surf.get_width() + 2)
 			self.display_surface.blit(self.heart_surf,(x,4))
+
+	def display_score(self):
+		# cache rendered surface (and rect) - adding a bit of complexity
+		if self.player.score_update_since_last:
+			self.text_surf = self.font.render(str(self.player.points), True, 'chocolate')
+			self.text_rect = self.text_surf.get_rect()
+			self.text_rect.x = WINDOW_WIDTH - self.text_rect.width - 4
+			self.text_rect.y = 4
+			self.player.score_update_since_last = False
+
+		self.display_surface.blit(self.text_surf, self.text_rect)
 
 	def upgrade_collision(self):
 		# this doesn't use the hitbox used for ball collisions, but I think that's ok
@@ -189,6 +206,7 @@ class Game:
 			# draw the frame
 			self.all_sprites.draw(self.display_surface)
 			self.display_hearts()
+			self.display_score()
 
 			# crt styling
 			if(WITH_CRT):
