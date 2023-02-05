@@ -3,6 +3,9 @@ from settings import *
 from sprites import Player, Ball, Block, Upgrade, Projectile
 from surfacemaker import SurfaceMaker
 from random import choice, randint
+from pathlib import Path
+import json
+from os import makedirs
 
 class Game:
 	def __init__(self):
@@ -12,6 +15,15 @@ class Game:
 		self.display_surface = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
 		pygame.display.set_caption('Breakout')
 		self.clock = pygame.time.Clock()
+
+		# highscores
+		self.highscore_dir_path = Path.home().joinpath(HIGHSCORE_FILE_DIR)
+
+		if not Path.exists(self.highscore_dir_path):
+			makedirs(self.highscore_dir_path)
+		
+		self.highscore_file_path = self.highscore_dir_path.joinpath(HIGHSCORE_FILE_NAME)
+		self.read_highscores()
   
 		# background
 		self.bg = self.create_bg()
@@ -76,6 +88,20 @@ class Game:
 			self.music = pygame.mixer.Sound('../sounds/music.wav')
 			self.music.set_volume(0.1)
 			self.music.play(loops = -1)
+
+	def write_highscores(self):
+		with open(self.highscore_file_path, 'w', encoding="utf-8") as f:
+			json.dump(self.highscores, f)
+			if self.debug:   
+				print("highscores saved:")
+				print(self.highscores)    
+		
+	def read_highscores(self):
+		with open(self.highscore_file_path, encoding="utf-8") as f:
+			self.highscores = json.load(f)
+			if self.debug:
+				print("highscores loaded:")
+				print(self.highscores)
 
 	def create_upgrade(self,pos):
 		upgrade_type = choice(UPGRADES)
