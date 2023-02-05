@@ -6,6 +6,7 @@ from random import choice, randint
 from pathlib import Path
 import json
 from os import makedirs
+from operator import itemgetter, attrgetter
 
 class Game:
 	def __init__(self):
@@ -16,15 +17,6 @@ class Game:
 		pygame.display.set_caption('Breakout')
 		self.clock = pygame.time.Clock()
 
-		# highscores
-		self.highscore_dir_path = Path.home().joinpath(HIGHSCORE_FILE_DIR)
-
-		if not Path.exists(self.highscore_dir_path):
-			makedirs(self.highscore_dir_path)
-		
-		self.highscore_file_path = self.highscore_dir_path.joinpath(HIGHSCORE_FILE_NAME)
-		self.read_highscores()
-  
 		# background
 		self.bg = self.create_bg()
 
@@ -41,10 +33,19 @@ class Game:
 		self.ball = Ball(self.all_sprites,self.player,self.block_sprites,self.reset)
 
 		# debug info
-		self.debug = False
+		self.debug = True
 		# ... with input delay
 		self.last_debug_press = 0
+  
+		# highscores
+		self.highscore_dir_path = Path.home().joinpath(HIGHSCORE_FILE_DIR)
 
+		if not Path.exists(self.highscore_dir_path):
+			makedirs(self.highscore_dir_path)
+		
+		self.highscore_file_path = self.highscore_dir_path.joinpath(HIGHSCORE_FILE_NAME)
+		self.read_highscores()
+  
 		# hearts
 		self.heart_surf = pygame.image.load('../graphics/other/heart.png').convert_alpha()
   
@@ -90,6 +91,8 @@ class Game:
 			self.music.play(loops = -1)
 
 	def write_highscores(self):
+		# ensure highscores are sorted after possibly inserting new ones
+		self.sort_highscores()
 		with open(self.highscore_file_path, 'w', encoding="utf-8") as f:
 			json.dump(self.highscores, f)
 			if self.debug:   
@@ -99,9 +102,14 @@ class Game:
 	def read_highscores(self):
 		with open(self.highscore_file_path, encoding="utf-8") as f:
 			self.highscores = json.load(f)
+			# ensure highscores are sorted after loading
+			self.sort_highscores()
 			if self.debug:
 				print("highscores loaded:")
 				print(self.highscores)
+
+	def sort_highscores(self):
+		self.highscores = sorted(self.highscores, key=itemgetter(1), reverse=True)
 
 	def create_upgrade(self,pos):
 		upgrade_type = choice(UPGRADES)
