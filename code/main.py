@@ -30,7 +30,7 @@ class Game:
 		self.surfacemaker = SurfaceMaker()
 		self.player = Player(self.all_sprites,self.surfacemaker)
 		self.stage_setup()
-		self.ball = Ball(self.all_sprites,self.player,self.block_sprites,self.reset)
+		self.ball = Ball(self.all_sprites,self.player,self.block_sprites,self.reset_after_life_loss)
 
 		# debug info
 		self.debug = True
@@ -49,12 +49,24 @@ class Game:
 		# hearts
 		self.heart_surf = pygame.image.load('../graphics/other/heart.png').convert_alpha()
   
+		# is game over?
+		self.game_over = False
+  
 		# score
-		self.font = pygame.font.Font('freesansbold.ttf', 24)
+		self.score_font = pygame.font.Font('freesansbold.ttf', 24)
 		self.text_surf = None
 		self.text_rect = None
 		self.player.score_update_since_last = True
 
+		# messages
+		self.message_font = pygame.font.Font('freesansbold.ttf', 42)
+		self.player_name_prompt = self.message_font.render("Name:", True, 'chocolate')
+		self.player_name_prompt_rect = self.player_name_prompt.get_rect()
+		self.player_name_prompt_rect.center = (WINDOW_WIDTH // 2 - (self.player_name_prompt_rect.width // 2), WINDOW_HEIGHT // 2)
+		self.game_over_text = self.message_font.render("Game Over", True, "crimson")
+		self.game_over_text_rect = self.game_over_text.get_rect()
+		self.game_over_text_rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT - self.game_over_text_rect.height - 60)  
+  
 		# projectile
 		self.projectile_surf = pygame.image.load('../graphics/other/projectile.png').convert_alpha()
 		self.can_shoot = True
@@ -141,7 +153,7 @@ class Game:
 	def display_score(self):
 		# cache rendered surface (and rect) - adding a bit of complexity
 		if self.player.score_update_since_last:
-			self.text_surf = self.font.render(str(self.player.points), True, 'chocolate')
+			self.text_surf = self.score_font.render(str(self.player.points), True, 'chocolate')
 			self.text_rect = self.text_surf.get_rect()
 			self.text_rect.x = WINDOW_WIDTH - self.text_rect.width - 4
 			self.text_rect.y = 4
@@ -151,7 +163,7 @@ class Game:
 
 	def display_debug(self):
 		self.player.display_debug()
-		fps_overlay = self.font.render("fps: " + str(int(self.clock.get_fps())), True, "yellow")
+		fps_overlay = self.score_font.render("fps: " + str(int(self.clock.get_fps())), True, "yellow")
 		fps_rect = fps_overlay.get_rect()
 		fps_rect.x = WINDOW_WIDTH - fps_rect.width - 4
 		fps_rect.y = WINDOW_HEIGHT - fps_rect.height - 4
@@ -206,7 +218,7 @@ class Game:
 				projectile.kill()
 				self.laserhit_sound.play()
 
-	def reset(self):
+	def reset_after_life_loss(self):
 		# reset upgrade-timers and remove upgrades from player
 		for ((_, upgrade_type)) in self.upgrade_running_timers:
 				self.player.remove_upgrade(upgrade_type)
@@ -217,6 +229,41 @@ class Game:
 		self.ball.reset()
 		self.last_speed_inc_time = pygame.time.get_ticks()
 	
+	def prompt_for_player_name(self):
+		self.display_surface.fill(0)
+		self.display_surface.blit(self.player_name_prompt, self.player_name_prompt_rect)
+		pygame.display.update()
+		pygame.event.clear()
+		while True:
+				event = pygame.event.wait()
+				if event.type == pygame.QUIT:
+						pygame.quit()
+						sys.exit()
+				elif event.type == pygame.KEYDOWN:
+					return
+						# if event.key = K_f:
+						# 		do something...		
+ 
+	def end_game(self):
+		print ("in end_game")
+		# TODO: Only save k best scores
+
+		# TODO: Prompt user for player name
+		player_name = self.prompt_for_player_name()
+  
+		if self.player_name and self.player.points > 0:
+			self.highscores.append([player_name, self.player.points])
+			self.write_highscores()
+
+		# TODO: Give option of playing again
+		play_again = False
+		if not play_again:
+			pygame.quit()
+			sys.exit()
+
+	def display_end_game_splash(self):
+		self.display_surface.blit(self.game_over_text, self.game_over_text_rect)		
+
 	def run(self):
 		last_time = time.time()
 		while True:
@@ -227,12 +274,14 @@ class Game:
    
 			# advance fps clock
 			self.clock.tick()
+   
+			if self.player.hearts <= 0:
+				self.game_over = True
 
 			# event loop
 			for event in pygame.event.get():
-				if event.type == pygame.QUIT or self.player.hearts <= 0:
-					pygame.quit()
-					sys.exit()
+				if event.type == pygame.QUIT or self.game_over:
+					self.end_game()
 				# note for future: I find it a bit hacky that keypresses are handled both here and in player
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:
@@ -262,6 +311,8 @@ class Game:
 			self.all_sprites.draw(self.display_surface)
 			self.display_hearts()
 			self.display_score()
+			if self.game_over:
+				self.display_end_game_splash()
 			if self.debug:
 				self.display_debug()
 
