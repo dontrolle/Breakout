@@ -142,14 +142,19 @@ class Player(pygame.sprite.Sprite):
 
 	def display_debug(self):
 		# rect and hitbox
-		pygame.draw.rect(self.display_surface, "brown1", self.hitbox)
+		if self.hitbox.width > self.rect.width:
+			pygame.draw.rect(self.display_surface, "brown1", self.hitbox)
+		
 		pygame.draw.rect(self.display_surface, "green", self.rect)
+  
+		if self.hitbox.width <= self.rect.width:
+			pygame.draw.rect(self.display_surface, "brown1", self.hitbox)
 
 		# blue guides
-		rect = pygame.Rect(0,WINDOW_HEIGHT - 10,10,10)
+		rect = pygame.Rect(0,WINDOW_HEIGHT - 10, 10, 10)
 		pygame.draw.rect(self.display_surface, "blue", rect)
 
-		rect = pygame.Rect(630,940,20,20)
+		rect = pygame.Rect(WINDOW_WIDTH // 2 - 5, WINDOW_HEIGHT - 10, 10, 10)
 		pygame.draw.rect(self.display_surface, "blue", rect)
   
 		rect = pygame.Rect(WINDOW_WIDTH - 10, WINDOW_HEIGHT - 10, 10, 10)
