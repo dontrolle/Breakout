@@ -11,7 +11,8 @@ class Game:
 		pygame.init()
 		self.display_surface = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
 		pygame.display.set_caption('Breakout')
-
+		self.clock = pygame.time.Clock()
+  
 		# background
 		self.bg = self.create_bg()
 
@@ -116,7 +117,11 @@ class Game:
 
 	def display_debug(self):
 		self.player.display_debug()
-		# fps_overlay = my_font.render(
+		fps_overlay = self.font.render("fps: " + str(int(self.clock.get_fps())), True, "yellow")
+		fps_rect = fps_overlay.get_rect()
+		fps_rect.x = WINDOW_WIDTH - fps_rect.width - 4
+		fps_rect.y = WINDOW_HEIGHT - fps_rect.height - 4
+		self.display_surface.blit(fps_overlay, fps_rect)
 
 	def upgrade_collision(self):
 		# this doesn't use the hitbox used for ball collisions, but I think that's ok
@@ -185,6 +190,9 @@ class Game:
 			# delta time
 			dt = time.time() - last_time
 			last_time = time.time()
+   
+			# advance fps clock
+			self.clock.tick()
 
 			# event loop
 			for event in pygame.event.get():
