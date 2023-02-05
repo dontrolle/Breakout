@@ -47,7 +47,6 @@ class Player(pygame.sprite.Sprite):
 		# position and rect
 		self.rect = self.image.get_rect(midbottom = (WINDOW_WIDTH // 2,WINDOW_HEIGHT - 20))
 		self.pos = pygame.math.Vector2(self.rect.topleft)
-		self.old_rect = self.rect.copy()
   
 		# hitbox - slightly larger to make edge-collisions a bit more friendly
 		self.player_width_hitbox_padding = PLAYER_WIDTH_HITBOX_PADDING
@@ -161,7 +160,6 @@ class Player(pygame.sprite.Sprite):
 		pygame.draw.rect(self.display_surface, "blue", rect)
    
 	def update(self,dt):
-		self.old_rect = self.rect.copy()
 		self.old_hitbox = self.hitbox.copy()
 		self.input()
 		self.pos.x += self.direction.x * self.speed * dt
@@ -298,6 +296,7 @@ class Ball(pygame.sprite.Sprite):
 				self.direction = self.direction.normalize()
 
 			# create old rect
+			# TODO: Migrate to separate hitbox and old_hitbox for Ball also
 			self.old_rect = self.rect.copy()
 
 			# horizontal movement + collision
