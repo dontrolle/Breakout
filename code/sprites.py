@@ -43,7 +43,6 @@ class Player(pygame.sprite.Sprite):
 		self.display_surface = pygame.display.get_surface()
 		self.surfacemaker = surfacemaker
 		self.image = surfacemaker.get_surf('player',(WINDOW_WIDTH // 10,WINDOW_HEIGHT // 20))
-		self.debug = False
 
 		# position and rect
 		self.rect = self.image.get_rect(midbottom = (WINDOW_WIDTH // 2,WINDOW_HEIGHT - 20))
@@ -68,9 +67,6 @@ class Player(pygame.sprite.Sprite):
 		self.laser_surf = pygame.image.load('../graphics/other/laser.png').convert_alpha()
 		self.laser_rects = []
 
-		# input delay
-		self.last_input_time = 0
-
 	def add_points(self, amount):
 		self.points += amount
 		self.score_update_since_last = True
@@ -87,10 +83,6 @@ class Player(pygame.sprite.Sprite):
 		elif keys[pygame.K_PAGEDOWN]:
 			self.player_width_hitbox_padding -= 2
 			self.inflate_pad(-2)
-		elif keys[pygame.K_F12]:
-			if pygame.time.get_ticks() - self.last_input_time >= 200:
-				self.debug = not self.debug
-				self.last_input_time = pygame.time.get_ticks()
 		else:
 			self.direction.x = 0
 
@@ -172,8 +164,6 @@ class Player(pygame.sprite.Sprite):
 		self.hitbox.centerx = self.rect.centerx
 		self.screen_constraint()
 		self.display_lasers()
-		if(self.debug):
-			self.display_debug()
 
 class Ball(pygame.sprite.Sprite):
 	def __init__(self,groups,player,blocks,on_loose_heart):

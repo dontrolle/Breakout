@@ -27,6 +27,11 @@ class Game:
 		self.stage_setup()
 		self.ball = Ball(self.all_sprites,self.player,self.block_sprites,self.reset)
 
+		# debug info
+		self.debug = False
+		# ... with input delay
+		self.last_debug_press = 0
+
 		# hearts
 		self.heart_surf = pygame.image.load('../graphics/other/heart.png').convert_alpha()
   
@@ -109,6 +114,10 @@ class Game:
 
 		self.display_surface.blit(self.text_surf, self.text_rect)
 
+	def display_debug(self):
+		self.player.display_debug()
+		# fps_overlay = my_font.render(
+
 	def upgrade_collision(self):
 		# this doesn't use the hitbox used for ball collisions, but I think that's ok
 		overlap_sprites = pygame.sprite.spritecollide(self.player,self.upgrade_sprites,True)
@@ -182,6 +191,7 @@ class Game:
 				if event.type == pygame.QUIT or self.player.hearts <= 0:
 					pygame.quit()
 					sys.exit()
+				# note for future: I find it a bit hacky that keypresses are handled both here and in player
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:
 						self.ball.active = True
@@ -189,6 +199,10 @@ class Game:
 							self.create_projectile()
 							self.can_shoot = False
 							self.shoot_time = pygame.time.get_ticks()
+					elif event.key == pygame.K_F12:
+						if pygame.time.get_ticks() - self.last_debug_press >= 200:
+							self.debug = not self.debug
+							self.last_debug_press = pygame.time.get_ticks()
 
 			# draw bg
 			#self.display_surface.blit(self.bg,(0,0))
@@ -206,9 +220,11 @@ class Game:
 			self.all_sprites.draw(self.display_surface)
 			self.display_hearts()
 			self.display_score()
+			if self.debug:
+				self.display_debug()
 
 			# crt styling
-			if(WITH_CRT):
+			if WITH_CRT:
 				self.crt.draw()
 
 			# update window
