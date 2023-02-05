@@ -42,12 +42,16 @@ class Player(pygame.sprite.Sprite):
 		# setup
 		self.display_surface = pygame.display.get_surface()
 		self.surfacemaker = surfacemaker
-		self.image = surfacemaker.get_surf('player',(WINDOW_WIDTH // 10,WINDOW_HEIGHT // 20))
+
+		# note - a lot of magic numbers here. Notable 28 comes from 2*14 - the pixel height of the topleft and bottomleft
+		player_pad_height = max(28, (WINDOW_HEIGHT // 20) // 4 * 3)
+		self.image = surfacemaker.get_surf('player',(WINDOW_WIDTH // 10, player_pad_height))
 
 		# position and rect
 		self.rect = self.image.get_rect(midbottom = (WINDOW_WIDTH // 2,WINDOW_HEIGHT - 20))
 		self.pos = pygame.math.Vector2(self.rect.topleft)
-  
+
+
 		# hitbox - slightly larger to make edge-collisions a bit more friendly
 		self.player_width_hitbox_padding = PLAYER_WIDTH_HITBOX_PADDING
 		self.hitbox = self.rect.inflate(self.player_width_hitbox_padding,0)
