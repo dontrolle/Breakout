@@ -106,7 +106,7 @@ class Game:
 		# ensure highscores are sorted after possibly inserting new ones
 		self.sort_highscores()
 		with open(self.highscore_file_path, 'w', encoding="utf-8") as f:
-			json.dump(self.highscores, f)
+			json.dump(self.highscores[0:NO_OF_POSITIONS_IN_HIGHSCORE_FILE], f)
 			if self.debug:   
 				print("highscores saved:")
 				print(self.highscores)    
@@ -234,28 +234,38 @@ class Game:
 		self.display_surface.blit(self.player_name_prompt, self.player_name_prompt_rect)
 		pygame.display.update()
 		pygame.event.clear()
+		# get name
+		name = ""
 		while True:
-				event = pygame.event.wait()
-				if event.type == pygame.QUIT:
-						pygame.quit()
-						sys.exit()
-				elif event.type == pygame.KEYDOWN:
-					return
-						# if event.key = K_f:
-						# 		do something...		
+			for evt in pygame.event.get():
+				if evt.type == pygame.KEYDOWN:
+					if evt.unicode.isalpha():
+						name += evt.unicode
+					elif evt.key == pygame.K_BACKSPACE:
+						name = name[:-1]
+					elif evt.key == pygame.K_RETURN or evt.key == pygame.K_ESCAPE:
+						return name
+				elif evt.type == pygame.QUIT:
+					pygame.quit()
+					sys.exit()
+			self.display_surface.fill(0)
+			self.display_surface.blit(self.player_name_prompt, self.player_name_prompt_rect)
+			name_block = self.message_font.render(name, True, "red")
+			name_rect = name_block.get_rect()
+			name_rect.left = self.player_name_prompt_rect.right + 5
+			name_rect.bottom = self.player_name_prompt_rect.bottom
+			self.display_surface.blit(name_block, name_rect)
+			pygame.display.update()
  
 	def end_game(self):
-		print ("in end_game")
-		# TODO: Only save k best scores
-
-		# TODO: Prompt user for player name
 		player_name = self.prompt_for_player_name()
   
-		if self.player_name and self.player.points > 0:
+		if player_name and self.player.points > 0:
 			self.highscores.append([player_name, self.player.points])
 			self.write_highscores()
 
 		# TODO: Give option of playing again
+		# TODO: Show highscores (also at game start)
 		play_again = False
 		if not play_again:
 			pygame.quit()
