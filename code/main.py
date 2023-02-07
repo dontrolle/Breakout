@@ -7,10 +7,14 @@ from pathlib import Path
 from random import choice
 
 import pygame
+from ball import Ball
+from block import Block
 from crt import CRT
+from player import Player
+from projectile import Projectile
 from settings import *
-from sprites import Ball, Block, Player, Projectile, Upgrade
 from surfacemaker import SurfaceMaker
+from upgrade import Upgrade
 
 
 class Game:
