@@ -1,12 +1,13 @@
 import pygame,sys,time
+import json
 from settings import *
 from sprites import Player, Ball, Block, Upgrade, Projectile
 from surfacemaker import SurfaceMaker
-from random import choice, randint
+from crt import CRT
+from random import choice
 from pathlib import Path
-import json
 from os import makedirs
-from operator import itemgetter, attrgetter
+from operator import itemgetter
 
 class Game:
 	def __init__(self):
@@ -332,24 +333,6 @@ class Game:
 
 			# update window
 			pygame.display.update()
-
-class CRT:
-	def __init__(self):
-		vignette = pygame.image.load('../graphics/other/tv.png').convert_alpha()
-		self.scaled_vignette = pygame.transform.scale(vignette,(WINDOW_WIDTH,WINDOW_HEIGHT))
-		self.display_surface = pygame.display.get_surface()
-		self.create_crt_lines()
-
-	def create_crt_lines(self):
-		line_height = 4
-		line_amount = WINDOW_HEIGHT // line_height
-		for line in range(line_amount):
-			y = line * line_height
-			pygame.draw.line(self.scaled_vignette, (20,20,20), (0,y), (WINDOW_WIDTH,y),1)
-
-	def draw(self):
-		self.scaled_vignette.set_alpha(randint(60,75))
-		self.display_surface.blit(self.scaled_vignette,(0,0))
 
 if __name__ == '__main__':
 	game = Game()
