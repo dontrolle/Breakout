@@ -1,6 +1,8 @@
+from random import choice, random
+
 import pygame
 from settings import *
-from random import choice, random
+
 
 class Upgrade(pygame.sprite.Sprite):
 	def __init__(self,pos,upgrade_type,groups):

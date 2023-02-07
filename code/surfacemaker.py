@@ -1,6 +1,8 @@
+from os import walk
+
 import pygame
 from settings import *
-from os import walk
+
 
 class SurfaceMaker:
 	def __init__(self):

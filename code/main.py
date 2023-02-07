@@ -1,13 +1,17 @@
-import pygame,sys,time
 import json
-from settings import *
-from sprites import Player, Ball, Block, Upgrade, Projectile
-from surfacemaker import SurfaceMaker
-from crt import CRT
-from random import choice
-from pathlib import Path
-from os import makedirs
+import sys
+import time
 from operator import itemgetter
+from os import makedirs
+from pathlib import Path
+from random import choice
+
+import pygame
+from crt import CRT
+from settings import *
+from sprites import Ball, Block, Player, Projectile, Upgrade
+from surfacemaker import SurfaceMaker
+
 
 class Game:
 	def __init__(self):
