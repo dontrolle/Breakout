@@ -4,37 +4,37 @@ WINDOW_HEIGHT = 960
 WITH_CRT = False
 
 BLOCK_MAP = [
-	'            ',
- 	'            ',
-	'            ',  
- 	'            ',
+  '            ',
   '            ',
   '            ',  
-	'bbbbbbbbbbbb',
-	'rrrrrzzrrrrr',
-	'bbbbbbbbbbbb',
-	'rrrrrrrrrrrr',
- 	'            ',
-	'            ',
-	'            ',
-	'            ',
-	'            ',
+  '            ',
+  '            ',
+  '            ',  
+  'bbbbbbbbbbbb',
+  'rrrrrzzrrrrr',
+  'bbbbbbbbbbbb',
+  'rrrrrrrrrrrr',
+  '            ',
+  '            ',
+  '            ',
+  '            ',
+  '            ',
   '            ']
 
 BLOCK_DEFS = {
-	'r': (1, 'red', 50),
-	'b': (1, 'blue', 50),
-	'g': (2, 'green', 100),
-	'o': (3, 'orange', 150),
-	'p': (4, 'purple', 200),
-	'e': (5, 'grey', 300),
-	'z': (6, 'bronze', 500),
+  'r': (1, 'red', 50),
+  'b': (1, 'blue', 50),
+  'g': (2, 'green', 100),
+  'o': (3, 'orange', 150),
+  'p': (4, 'purple', 200),
+  'e': (5, 'grey', 300),
+  'z': (6, 'bronze', 500),
 }
 
 # note: for now, we accept that there can only be one block-type
 # with a particular in this dict, and that it will be an arbitrary one
 BLOCK_TYPE_BY_HEALTH = {
-	h : n for (h,n,_) in BLOCK_DEFS.values()
+  h : n for (h,n,_) in BLOCK_DEFS.values()
 }
 
 GAP_SIZE = 2
@@ -61,13 +61,13 @@ SQUARE_ROOT_3_DIV_2 = 0.866
 # must be ordered from largest to -1 
 # (-1 to catch any rounding errors, which end up with an x below 0)
 COLLISION_DIRECTION_VECTORS = {
-	0.9:  (SQUARE_ROOT_3_DIV_2,-0.5),
-	0.8:  (SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
-	0.65: (0.5,-SQUARE_ROOT_3_DIV_2),
-	0.35: (1,-1),
-	0.2:  (-0.5,-SQUARE_ROOT_3_DIV_2),
-	0.1:  (-SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
-	-1:   (-SQUARE_ROOT_3_DIV_2,-0.5), 
+  0.9:  (SQUARE_ROOT_3_DIV_2,-0.5),
+  0.8:  (SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
+  0.65: (0.5,-SQUARE_ROOT_3_DIV_2),
+  0.35: (1,-1),
+  0.2:  (-0.5,-SQUARE_ROOT_3_DIV_2),
+  0.1:  (-SQUARE_ROOT_2_DIV_2,-SQUARE_ROOT_2_DIV_2),
+  -1:   (-SQUARE_ROOT_3_DIV_2,-0.5), 
 }
 
 HIGHSCORE_FILE_DIR = "py_breakout"
