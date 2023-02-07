@@ -59,7 +59,7 @@ class Ball(pygame.sprite.Sprite):
         self.pos.y = self.rect.y
         self.direction.y *= -1
 
-      if self.rect.bottom > WINDOW_HEIGHT:
+      if self.rect.top > WINDOW_HEIGHT:
         self.fail_sound.play()
         self.on_loose_heart()
         
