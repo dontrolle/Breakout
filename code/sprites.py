@@ -63,7 +63,7 @@ class Player(pygame.sprite.Sprite):
     self.speed = PLAYER_SPEED
   
     # properties
-    self.hearts = 3
+    self.hearts = PLAYER_START_HEARTS
     self.points = 0
     self.score_update_since_last = True
 

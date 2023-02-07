@@ -38,7 +38,7 @@ class Game:
     self.ball = Ball(self.all_sprites,self.player,self.block_sprites,self.reset_after_life_loss)
 
     # debug info
-    self.debug = True
+    self.debug = INIT_DEBUG_FLAG
     # ... with input delay
     self.last_debug_press = 0
   
