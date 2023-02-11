@@ -45,6 +45,7 @@ class Game:
     self.debug = INIT_DEBUG_FLAG
     # ... with input delay
     self.last_debug_press = 0
+    self.fps_measure_time = -1000
   
     # highscores
     self.highscore_dir_path = Path.home().joinpath(HIGHSCORE_FILE_DIR)
@@ -172,11 +173,14 @@ class Game:
 
   def display_debug(self):
     self.player.display_debug()
-    fps_overlay = self.score_font.render("fps: " + str(int(self.clock.get_fps())), True, "yellow")
-    fps_rect = fps_overlay.get_rect()
-    fps_rect.x = WINDOW_WIDTH - fps_rect.width - 4
-    fps_rect.y = WINDOW_HEIGHT - fps_rect.height - 4
-    self.display_surface.blit(fps_overlay, fps_rect)
+    if pygame.time.get_ticks() - self.fps_measure_time >= 500:
+      self.fps_overlay = self.score_font.render("fps: " + str(int(self.clock.get_fps())), True, "yellow")
+      self.fps_rect = self.fps_overlay.get_rect()
+      self.fps_rect.x = WINDOW_WIDTH - self.fps_rect.width - 4
+      self.fps_rect.y = WINDOW_HEIGHT - self.fps_rect.height - 4
+      self.fps_measure_time = pygame.time.get_ticks()
+    
+    self.display_surface.blit(self.fps_overlay, self.fps_rect)
 
   def upgrade_collision(self):
     # this doesn't use the hitbox used for ball collisions, but I think that's ok
