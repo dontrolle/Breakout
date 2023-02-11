@@ -299,8 +299,12 @@ class Game:
 
       # event loop
       for event in pygame.event.get():
-        if event.type == pygame.QUIT or self.game_over:
+        if self.game_over:
           self.end_game()
+        # Getting an OS signal to quit, should always exit immediately
+        if event.type == pygame.QUIT:
+          pygame.quit()
+          sys.exit()
         # note for future: I find it a bit hacky that keypresses are handled both here and in player
         if event.type == pygame.KEYDOWN:
           if event.key == pygame.K_SPACE:
