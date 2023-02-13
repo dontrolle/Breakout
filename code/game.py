@@ -73,7 +73,7 @@ class Game:
     self.player_name_prompt = self.message_font.render("Name:", True, 'chocolate')
     self.player_name_prompt_rect = self.player_name_prompt.get_rect()
     self.player_name_prompt_rect.center = (WINDOW_WIDTH // 2 - (self.player_name_prompt_rect.width // 2), WINDOW_HEIGHT // 2)
-    self.game_over_text = self.message_font.render("Game Over", True, "crimson")
+    self.game_over_text = self.message_font.render("Game Over", True, 'firebrick')
     self.game_over_text_rect = self.game_over_text.get_rect()
     self.game_over_text_rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT - self.game_over_text_rect.height - 60)  
   
@@ -142,7 +142,7 @@ class Game:
     scale_factor = WINDOW_HEIGHT / bg_original.get_height()
     scaled_width = bg_original.get_width() * scale_factor
     scaled_height = bg_original.get_height() * scale_factor
-    scaled_bg = pygame.transform.scale(bg_original,(scaled_width,scaled_height)) 
+    scaled_bg = pygame.transform.scale(bg_original,(int(scaled_width),int(scaled_height))) 
     return scaled_bg
 
   def stage_setup(self):
