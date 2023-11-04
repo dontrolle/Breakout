@@ -181,6 +181,10 @@ class Game:
       self.fps_measure_time = pygame.time.get_ticks()
     
     self.display_surface.blit(self.fps_overlay, self.fps_rect)
+    
+    # display ball_speed:
+    ball_speed_overlay = self.score_font.render("ball speed: " + str(self.ball.speed), True, "yellow")
+    self.display_surface.blit(ball_speed_overlay, (4, WINDOW_HEIGHT - ball_speed_overlay.get_height() - 4))
 
   def upgrade_collision(self):
     # this doesn't use the hitbox used for ball collisions, but I think that's ok

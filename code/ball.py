@@ -39,7 +39,8 @@ class Ball(pygame.sprite.Sprite):
     self.active = False
     self.direction.y = -1
     self.player.hearts -= 1
-    self.speed = BALL_INIT_SPEED
+    # reset speed - TODO: too easy, or maybe configurable whether it's done?
+    # self.speed = BALL_INIT_SPEED
    
   def window_collision(self,direction):
     if direction == 'horizontal':
